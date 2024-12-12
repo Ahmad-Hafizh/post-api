@@ -16,9 +16,9 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     }
 
     const checkToken = verify(token, process.env.TOKEN_KEY || 'test');
-    // console.log(checkToken);
 
-    res.locals.decrypt = checkToken;
+    res.locals.dcrypt = checkToken;
+
     next(); //meneruskqn process ke controller selanjutnya
   } catch (error: any) {
     console.log(error.message);

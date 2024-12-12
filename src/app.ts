@@ -5,6 +5,9 @@ import cors from 'cors';
 import ResponseHandler from './utils/responseHandler';
 import { UserRouter } from './route/userRouter';
 import { PostRouter } from './route/postRouter';
+import path from 'path';
+import scheduleTask from './cron/scheduleTask';
+import redisClient from './config/redis';
 
 const PORT = process.env.PORT || 8082;
 
@@ -21,6 +24,9 @@ class App {
   private configure(): void {
     this.app.use(cors());
     this.app.use(express.json());
+    // middleware for direct access directory
+    this.app.use('/', express.static(path.join(__dirname, '../public')));
+    // scheduleTask();
   }
 
   private routes(): void {
@@ -39,11 +45,12 @@ class App {
     });
   }
 
-  public start(): void {
+  public async start(): Promise<void> {
+    await redisClient.connect(); //connect to redis
     this.app.listen(PORT, () => {
       console.log('API running at', PORT);
     });
   }
 }
 
-export default new App();
+export default App;

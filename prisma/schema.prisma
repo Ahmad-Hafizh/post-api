@@ -20,8 +20,10 @@ model User {
   username String @unique
   email String @unique
   password String
+  imgprofile String?
   address String?
   phone String?
+  isVerified Boolean @default(false)
   posts Post[]
 
   @@map("users")

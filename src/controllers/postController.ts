@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 import { prisma } from '../config/prisma';
 import ResponseHandler from '../utils/responseHandler';
+import redisClient from '../config/redis';
 
 export class PostController {
   async getPost(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
+      const redisData = await redisClient.get('posts');
+      if (redisData) {
+        return ResponseHandler.success(res, 'Your get Post is Success', 200, JSON.parse(redisData));
+      }
+
       const query: any = req.query;
       if (query.post_id) query.post_id = parseInt(query.post_id);
       if (query.author_id) query.author_id = parseInt(query.author_id);
@@ -20,6 +26,7 @@ export class PostController {
         };
       }
 
+      await redisClient.setEx('posts', 5, JSON.stringify(posts));
       return ResponseHandler.success(res, 'Your get Post is Success', 200, posts.length == 1 ? posts[0] : posts);
     } catch (error: any) {
       next({

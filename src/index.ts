@@ -1,7 +1,8 @@
 import App from './app';
 
 const main = () => {
-  App.start();
+  const server = new App();
+  server.start();
 };
 
 main();
